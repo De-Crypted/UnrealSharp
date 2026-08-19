@@ -223,7 +223,9 @@ void FUnrealSharpEditorModule::OnMergeManagedSlnAndNativeSln()
 
 	auto ToWindowsSlashes = [](FString InPath)
 	{
+#if defined(_WIN32)
 		InPath.ReplaceInline(TEXT("/"), TEXT("\\"));
+#endif
 		return InPath;
 	};
 

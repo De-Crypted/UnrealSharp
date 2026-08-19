@@ -41,9 +41,8 @@ void FCSHotReloadUtilities::CollectDirtiedFiles(const TArray<FFileChangeData>& C
 
 #if defined(_WIN32)
 		NormalizedPath.ReplaceInline(TEXT("/"), TEXT("\\"));
-#else
-		NormalizedPath.ReplaceInline(TEXT("\\"), TEXT("/"));
 #endif
+
 		if (HasFileBeenDirtied(OutDirtied, NormalizedPath, Change.Action))
 		{
 			continue;
@@ -104,7 +103,7 @@ bool FCSHotReloadUtilities::RecompileDirtyProjects(const TArray<UCSManagedAssemb
 		
 		AssemblyNames.Add(Assembly->GetName());
 	}
-	
+
 	return UnrealSharpEditorModule.GetManagedEditorCallbacks().RecompileDirtyProjects(&OutExceptionMessage, &AssemblyNames);
 }
 
