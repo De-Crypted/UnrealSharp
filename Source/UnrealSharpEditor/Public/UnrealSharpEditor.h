@@ -24,7 +24,7 @@ struct FCSManagedEditorCallbacks
 {
     FCSManagedEditorCallbacks() = default;
     
-    using FRecompileDirtyProjects = bool(__stdcall*)(void*, TArray<FString>);
+    using FRecompileDirtyProjects = bool(__stdcall*)(void*, const TArray<FString>*);
     using FRecompileChangedFile = void(__stdcall*)(const TCHAR*, const TCHAR*, void*);
     using FRemoveSourceFile = void(__stdcall*)(const TCHAR*, const TCHAR*);
     

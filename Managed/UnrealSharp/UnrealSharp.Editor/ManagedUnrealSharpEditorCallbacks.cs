@@ -9,7 +9,7 @@ namespace UnrealSharp.Editor;
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct FManagedUnrealSharpEditorCallbacks()
 {
-    public delegate* unmanaged<IntPtr, UnmanagedArray, NativeBool> RecompileDirtyProjects = &ManagedUnrealSharpEditorCallbacks.RecompileDirtyProjects;
+    public delegate* unmanaged<IntPtr, IntPtr, NativeBool> RecompileDirtyProjects = &ManagedUnrealSharpEditorCallbacks.RecompileDirtyProjects;
     
     public delegate* unmanaged<char*, char*, IntPtr, void> RecompileChangedFile = &ManagedUnrealSharpEditorCallbacks.RecompileChangedFile;
     public delegate* unmanaged<char*, char*, void> RemoveSourceFile = &ManagedUnrealSharpEditorCallbacks.RemoveSourceFile;
@@ -25,12 +25,13 @@ public unsafe struct FManagedUnrealSharpEditorCallbacks()
 public static class ManagedUnrealSharpEditorCallbacks
 {
     [UnmanagedCallersOnly]
-    public static NativeBool RecompileDirtyProjects(IntPtr exceptionBuffer, UnmanagedArray pendingModifiedAssembliesBuffer)
+    public unsafe static NativeBool RecompileDirtyProjects(IntPtr exceptionBuffer, IntPtr pendingModifiedAssembliesPtr)
     {
         try
         {
+            UnmanagedArray pendingModifiedAssembliesBuffer = *(UnmanagedArray*)pendingModifiedAssembliesPtr;
             List<string> modifiedAssemblyNames = new(pendingModifiedAssembliesBuffer.ArrayNum);
-            
+
             pendingModifiedAssembliesBuffer.ForEachWithMarshaller(StringMarshaller.FromNative, assemblyName =>
             {
                 modifiedAssemblyNames.Add(assemblyName);
