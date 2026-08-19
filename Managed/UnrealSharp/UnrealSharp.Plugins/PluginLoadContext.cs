@@ -52,4 +52,17 @@ public class PluginLoadContext : AssemblyLoadContext
         AssemblyCache.AddAssembly(newAssembly);
         return newAssembly;
     }
+
+    protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
+    {
+        string? libraryPath =
+            _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
+
+        if (!string.IsNullOrEmpty(libraryPath))
+        {
+            return LoadUnmanagedDllFromPath(libraryPath);
+        }
+
+        return IntPtr.Zero;
+    }
 }
