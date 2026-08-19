@@ -241,3 +241,28 @@ bool UnrealSharp::DotNetUtilities::IsVersionHigher(const FString& A, const FStri
 	
 	return PatchA > PatchB;
 }
+FString UnrealSharp::DotNetUtilities::GetLinuxCryptoShimPath()
+{
+	const FString DotNetRoot = GetDotNetDirectory();
+	const FString ShimRoot = FPaths::Combine(DotNetRoot, TEXT("shared"), TEXT("Microsoft.NETCore.App"));
+
+	TArray<FString> Folders;
+	IFileManager::Get().FindFiles(Folders, *(ShimRoot / TEXT("*")), true, true);
+
+	FString HighestVersion;
+	for (const FString& Folder : Folders)
+	{
+		if (HighestVersion.IsEmpty() || IsVersionHigher(Folder, HighestVersion))
+		{
+			HighestVersion = Folder;
+		}
+	}
+
+	if (HighestVersion.IsEmpty())
+	{
+		UE_LOGFMT(LogUnrealSharpUtilities, Fatal, "Failed to find .NET runtime version in {0}", ShimRoot);
+		return FString();
+	}
+
+	return FPaths::Combine(ShimRoot, HighestVersion, TEXT("libSystem.Security.Cryptography.Native.OpenSsl.so"));
+}
