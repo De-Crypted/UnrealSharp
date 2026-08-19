@@ -77,11 +77,18 @@ void FCSDotNetRuntimeHost::ShutdownManagedRuntime()
 	{
 		FPlatformProcess::FreeDllHandle(RuntimeHost);
 	}
-	
+
 	Hostfxr_InitForCommandLine = nullptr;
 	Hostfxr_InitForRuntimeConfig = nullptr;
 	Hostfxr_GetRuntimeDelegate = nullptr;
 	Hostfxr_Close = nullptr;
+
+#if defined(__linux__)
+	if (CryptoShimHandle)
+	{
+		dlclose(CryptoShimHandle);
+	}
+#endif
 }
 
 load_assembly_and_get_function_pointer_fn FCSDotNetRuntimeHost::InitializeHost()
@@ -92,6 +99,31 @@ load_assembly_and_get_function_pointer_fn FCSDotNetRuntimeHost::InitializeHost()
 		UE_LOGFMT(LogUnrealSharp, Error, "Couldn't find Hostfxr at: {0}", RuntimeHostPath);
 		return nullptr;
 	}
+
+#if defined(__linux__)
+	// Unreal Engine's Linux OpenSSL integration statically links OpenSSL 1.1
+	// into several engine modules (e.g. SSL and DerivedDataCache) and exports
+	// EVP_* symbols from those shared objects.
+	//
+	// .NET 10's System.Security.Cryptography.Native.OpenSsl shim expects
+	// OpenSSL 3. Without RTLD_DEEPBIND, ELF symbol interposition can resolve
+	// the shim's EVP_* references to Unreal's OpenSSL 1.1 implementation,
+	// resulting in an ABI-incompatible call and a SIGSEGV.
+	//
+	// Preload the .NET crypto shim with RTLD_DEEPBIND so its OpenSSL symbols
+	// resolve against its intended libcrypto.so.3.
+	#include <dlfcn.h>
+
+	CryptoShimHandle = dlopen(
+		TCHAR_TO_ANSI(*UnrealSharp::DotNetUtilities::GetLinuxCryptoShimPath()),
+		RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND);
+
+	if (!CryptoShimHandle)
+	{
+		UE_LOG(LogUnrealSharp, Error, TEXT("Crypto shim load failed: %s"), UTF8_TO_TCHAR(dlerror()));
+		return nullptr;
+	}
+#endif
 
 	RuntimeHost = FPlatformProcess::GetDllHandle(*RuntimeHostPath);
 	if (!RuntimeHost)

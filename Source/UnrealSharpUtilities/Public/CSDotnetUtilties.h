@@ -28,4 +28,5 @@ namespace UnrealSharp::DotNetUtilities
 	UNREALSHARPUTILITIES_API FString GetLatestHostFxrPath();
 	UNREALSHARPUTILITIES_API FString GetRuntimeHostPath();
 	UNREALSHARPUTILITIES_API FString GetRuntimeConfigPath();
+	UNREALSHARPUTILITIES_API FString GetLinuxCryptoShimPath();
 };

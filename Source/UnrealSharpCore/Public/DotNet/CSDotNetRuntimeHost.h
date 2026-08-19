@@ -35,4 +35,8 @@ private:
 	hostfxr_close_fn Hostfxr_Close = nullptr;
 
 	void* RuntimeHost = nullptr;
+
+#if defined(__linux__)
+	void* CryptoShimHandle = nullptr;
+#endif
 };
