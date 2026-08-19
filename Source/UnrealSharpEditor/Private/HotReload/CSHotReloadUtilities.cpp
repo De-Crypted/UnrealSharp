@@ -129,7 +129,7 @@ void FCSHotReloadUtilities::RebuildDependentBlueprints(const TSet<FCSObjectID>& 
 		bool bNeedsRecompile = false;
 		for (const UEdGraph* Graph : Graphs)
 		{
-			for (const TObjectPtr Node : Graph->Nodes)
+			for (auto Node : Graph->Nodes)
 			{
 				if (!IsNodeAffectedByReload(Node, RebuiltTypes))
 				{

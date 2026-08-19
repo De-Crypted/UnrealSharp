@@ -116,7 +116,7 @@ FString UnrealSharp::DotNetUtilities::GetRuntimeHostPath()
 #elif defined(__APPLE__)
     return FPaths::Combine(GetPluginAssembliesPath(), HOSTFXR_MAC);
 #else
-    return FPaths::Combine(GetPluginAssembliesPath(), HOSTFXR_LINUX);
+    return FPaths::Combine(Paths::GetPluginAssembliesPath(), HOSTFXR_LINUX);
 #endif
     }
 
