@@ -240,8 +240,10 @@ public static class NameMapper
                 
                 isConflicting = true;
                     
-                if (type is UhtFunction typeAsFunction && !function.HasSameSignature(typeAsFunction))
+                if (type is UhtFunction typeAsFunction && function.HasSameSignature(typeAsFunction))
                 {
+                    // Same signature as the interface method: this function implements the
+                    // interface, so keep the mapped name instead of renaming to the engine name.
                     isConflicting = false;
                 }
                     

@@ -62,7 +62,7 @@ public static class ClassUtilities
     {
         return (classObj.ClassFlags & flags) == flags;
     }
-    
+
     public static void GetExportedProperties(this UhtStruct structObj, List<UhtProperty> properties, Dictionary<UhtProperty, GetterSetterPair> getterSetterBackedProperties)
     {
         foreach (UhtProperty property in structObj.Properties)
@@ -84,11 +84,11 @@ public static class ClassUtilities
         }
     }
 
-    public static void GetExportedFunctions(this UhtClass classObj, List<UhtFunction> functions, 
-        List<UhtFunction> exportedOverrides, 
-        Dictionary<string, GetterSetterPair> getterSetterPairs, 
-        Dictionary<string, GetterSetterPair> getSetOverrides, 
-        List<ExtensionMethod> extensionMethods, 
+    public static void GetExportedFunctions(this UhtClass classObj, List<UhtFunction> functions,
+        List<UhtFunction> exportedOverrides,
+        Dictionary<string, GetterSetterPair> getterSetterPairs,
+        Dictionary<string, GetterSetterPair> getSetOverrides,
+        List<ExtensionMethod> extensionMethods,
         List<UhtFunction> autocastFunctions)
     {
         List<UhtFunction> exportedFunctions = new();
@@ -128,7 +128,7 @@ public static class ClassUtilities
 
                 if (structToConvertProperty.Package != function.Package)
                 {
-                    // For auto-casts to work, they both need to be in the same generated assembly. 
+                    // For auto-casts to work, they both need to be in the same generated assembly.
                     // Currently not supported, as we separate engine and project generated assemblies.
                     continue;
                 }
@@ -139,7 +139,7 @@ public static class ClassUtilities
             {
                 functions.Add(function);
             }
-            
+
             if (function.HasAllFlags(EFunctionFlags.Static) && classObj.IsChildOf(GeneratorStatics.BlueprintFunctionLibrary))
             {
                 FunctionExporter.TryAddExtensionMethod(function, extensionMethods);
@@ -154,7 +154,7 @@ public static class ClassUtilities
             UhtClass interfaceClass = declaration.GetInterfaceAlternateClass();
             foreach (UhtFunction function in interfaceClass.Functions)
             {
-                if (function.MakeGetterSetterPair(getSetOverrides) || HasFunction(exportedFunctions, function) || !function.CanExportFunction())
+                if (!function.CanExportFunction() || function.MakeGetterSetterPair(getSetOverrides) || HasFunction(exportedFunctions, function))
                 {
                     continue;
                 }

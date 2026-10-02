@@ -140,6 +140,11 @@ public static class PropertyTranslatorManager
         InclusionLists.BanProperty("UActorComponent", "bReplicates");
         InclusionLists.BanFunction("UActorComponent", "SetIsReplicated");
 
+        // MeshPartitionEditor: BP_SetAffectedMegaMesh's DisplayName maps to the same C# name
+        // (AffectedMeshPartition) as the AffectedMegaMesh UPROPERTY, duplicating the member.
+        InclusionLists.BanFunction("UModifierComponent", "BP_SetAffectedMegaMesh");
+        InclusionLists.BanFunction("UModifierBlueprintInterface", "BP_SetAffectedMegaMesh");
+
         // Doesn't have any fields
         InclusionLists.BanArithmetic("FSubsystemCollectionBaseRef");
         InclusionLists.BanArithmetic("FRandomStream");
